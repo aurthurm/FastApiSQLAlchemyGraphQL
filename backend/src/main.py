@@ -2,13 +2,13 @@ from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 from graphql.execution.executors.asyncio import AsyncioExecutor
 
-from database.session import database
+from database.session import database # noqa
 
-from api.api_v1.api import api_router
-from core.config import settings
+from api.api_v1.api import api_router # noqa
+from core.config import settings # noqa
 
 from starlette.graphql import GraphQLApp
-from gql.schema import gql_schema
+from gql.schema import gql_schema # noqa
 
 
 app = FastAPI(

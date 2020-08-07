@@ -3,11 +3,11 @@ from jose import jwt
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
-from apps.user import crud, models
-from apps.core import schemas as core_schemas
-from core import security
-from core.config import settings
-from database.session import GQLSessionLocal
+from apps.user import crud, models # noqa
+from apps.core import schemas as core_schemas # noqa
+from core import security # noqa
+from core.config import settings # noqa
+from database.session import GQLSessionLocal # noqa
 
 # synchronous database
 sync_db = GQLSessionLocal.session_factory()

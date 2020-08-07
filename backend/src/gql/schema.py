@@ -2,13 +2,13 @@ import graphene
 from graphene import String
 from graphql import GraphQLError
 
-from apps.item import schemas, models
-from gql.items import query as item_query
-from gql.items import mutations as item_mutations
+from apps.item import schemas, models # noqa
+from gql.items import query as item_query # noqa
+from gql.items import mutations as item_mutations # noqa
 
-from apps.user import schemas, models
-from gql.users import query as user_query
-from gql.users import mutations as user_mutations
+from apps.user import schemas, models # noqa
+from gql.users import query as user_query # noqa
+from gql.users import mutations as user_mutations # noqa
 
 class Query(
     user_query.Query, 

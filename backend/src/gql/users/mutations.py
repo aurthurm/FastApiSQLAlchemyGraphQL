@@ -3,21 +3,21 @@ from fastapi.encoders import jsonable_encoder
 import graphene
 from graphql import GraphQLError
 from sqlalchemy.orm import Session
-from core.config import settings
-from core import security
-from utils import (
+from core.config import settings # noqa
+from core import security # noqa
+from utils import ( # noqa
     generate_password_reset_token,
     send_reset_password_email,
     send_new_account_email,
     verify_password_reset_token,
 )
-from gql import deps
-from apps.user import crud, schemas
-from gql.users.types import UserType
+from gql import deps # noqa
+from apps.user import crud, schemas # noqa
+from gql.users.types import UserType # noqa
 
 
-from database.session import GQLSessionLocal
-from database.session import database as async_db
+from database.session import GQLSessionLocal # noqa
+from database.session import database as async_db # noqa
 
 sync_db = GQLSessionLocal.session_factory()
 
@@ -30,6 +30,7 @@ class CreateUser(graphene.Mutation):
         email = graphene.String(required=True)
         password = graphene.String(required=True)
         passwordc = graphene.String(required=True)
+        is_superuser = graphene.Boolean(required=False)
         open_reg = graphene.Boolean(required=True)
         token = graphene.String(required=True)
 
@@ -37,7 +38,7 @@ class CreateUser(graphene.Mutation):
     user = graphene.Field(lambda: UserType)
 
     @staticmethod
-    def mutate(root, info, token, open_reg, firstname, lastname, username, email, password, passwordc, db: Session = sync_db, ):
+    def mutate(root, info, token, open_reg, firstname, lastname, username, email, password, passwordc, is_superuser, db: Session = sync_db, ):
         if open_reg and not settings.USERS_OPEN_REGISTRATION:
             GraphQLError("Open user registration is forbidden on this server")
         active_super_user = deps.get_current_active_superuser(token=token)
@@ -56,6 +57,7 @@ class CreateUser(graphene.Mutation):
             "user_name": username,
             "email": email,
             "password": password,
+            "is_superuser": is_superuser,
         }
         user_in = schemas.UserCreate(**user_in)
         user = crud.user.create(db, obj_in=user_in)
@@ -163,5 +165,6 @@ class RecoverPassword(graphene.Mutation):
         msg = "Password recovery email sent"
         ok = True
         return RecoverPassword(ok=ok, msg=msg)
+    
     
 # Reset password is an api_endpoint since it will be a link

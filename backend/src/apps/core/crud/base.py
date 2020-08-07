@@ -83,8 +83,8 @@ class ACRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self.model = model
         
     @property
-    def _table(self):
-        return self.model().__table__
+    async def _table(self):
+        return await self.model().__table__
 
     async def get(self, db: Database, id: Any) -> Optional[ModelType]:
         query = self._table.select().where(self.model.id == id) #.first()
@@ -116,7 +116,7 @@ class ACRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
             update_data = obj_in
         else:
             update_data = obj_in.dict(exclude_unset=True)
-        for field in obj_data:
+        async for field in obj_data:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
         query = self._table.update().values(**db_obj)
