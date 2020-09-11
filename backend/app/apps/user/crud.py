@@ -74,11 +74,11 @@ Database = TypeVar("Database", bound=databases.Database)
 
 class ACRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
     async def get_by_email(self, db: Database, *, email: str) -> Optional[User]:
-        query = self._table.select().where(self.model.email == email)
+        query = self.table.select().where(self.model.email == email)
         return await db.fetch_one(query)
     
     async def get_by_username(self, db: Database, *, username: str) -> Optional[User]:
-        query = self._table.select().where(self.model.username == username)
+        query = self.table.select().where(self.model.username == username)
         return await db.fetch_one(query)
 
     async def create(self, db: Database, *, obj_in: UserCreate) -> User:
@@ -90,7 +90,7 @@ class ACRUDUser(CRUDBase[User, UserCreate, UserUpdate]):
             "last_name": obj_in.last_name,
             "is_superuser": obj_in.is_superuser,
         }
-        query = self._table.insert().values(**obj_update)
+        query = self.table.insert().values(**obj_update)
         return await db.execute(query)
 
     async def update(

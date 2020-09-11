@@ -83,17 +83,17 @@ class ACRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         self.model = model
         
     @property
-    async def _table(self):
+    async def table(self):
         return await self.model().__table__
 
     async def get(self, db: Database, id: Any) -> Optional[ModelType]:
-        query = self._table.select().where(self.model.id == id) #.first()
+        query = self.table.select().where(self.model.id == id) #.first()
         return await db.fetch_one(query)
 
     async def get_multi(
         self, db: Database, *, skip: int = 0, limit: int = 100
     ) -> List[ModelType]:
-        query = self._table.select().offset(skip).limit(limit)
+        query = self.table.select().offset(skip).limit(limit)
         # from sqlalchemy.sql import select
         # columns = list(self.model())
         # stmnt = select(columns).offset(skip).limit(limit)
@@ -101,7 +101,7 @@ class ACRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     async def create(self, db: Database, *, obj_in: CreateSchemaType) -> ModelType:
         obj_in_data = jsonable_encoder(obj_in)
-        query = self._table.insert().values(**obj_in_data)
+        query = self.table.insert().values(**obj_in_data)
         return await db.execute(query)
 
     async def update(
@@ -119,9 +119,9 @@ class ACRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         async for field in obj_data:
             if field in update_data:
                 setattr(db_obj, field, update_data[field])
-        query = self._table.update().values(**db_obj)
+        query = self.table.update().values(**db_obj)
         return await db.execute(query)
 
     async def remove(self, db: Database, *, id: int) -> ModelType:
-        query = self._table.delete().where(self.model.id == id)
+        query = self.table.delete().where(self.model.id == id)
         return await db.execute(query)
